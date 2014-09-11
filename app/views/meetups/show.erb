@@ -4,6 +4,10 @@
 
 <p><%= @meetup.description%></p>
 
+<form action="/meetups/<%= @meetup.id %>/memberships" method="post">
+  <input type="submit" value="Join this meetup">
+</form>
 
+<br>
 
 <p><a href="/meetups">View all the meetups</a></p>
