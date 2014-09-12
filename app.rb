@@ -53,3 +53,49 @@ end
 get '/example_protected_page' do
   authenticate!
 end
+
+get '/meetups' do
+  @meetups = Meetup.order(name: :asc)
+
+  erb :'meetups/index'
+end
+
+get '/meetups/new' do
+  authenticate!
+
+  erb :'/meetups/new'
+end
+
+get '/meetups/:id' do
+  @meetup = Meetup.find(params[:id])
+
+  erb :'meetups/show'
+end
+
+post '/meetups' do
+  authenticate!
+
+  @meetup = Meetup.new(params[:meetup])
+
+  if @meetup.save
+    redirect "/meetups/#{@meetup.id}"
+  else
+    flash[:notice] = "There were errors with the information that you provided."
+    render :'meetups/new'
+  end
+end
+
+post '/meetups/:meetup_id/memberships' do
+  authenticate!
+
+  meetup = Meetup.find(params[:meetup_id])
+  @membership = Membership.new(user_id: current_user.id, meetup_id: meetup.id)
+
+  if @membership.save
+    flash[:notice] = "You joined the meetup!"
+    redirect "/meetups/#{meetup.id}"
+  else
+    flash[:notice] = "There was an error. Please try again."
+    redirect "/meetups/#{meetup.id}"
+  end
+end
